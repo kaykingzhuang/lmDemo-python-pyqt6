@@ -33,7 +33,8 @@ class Script:
                     counts = {}
                     for item in res:
                         score = item.get("score")
-                        if score>=self.config.score:
+                        tName = item.get("name")
+                        if score>=self.config.score and tName not in self.config.exclude:
                             counts[item.get("name")] = counts.get(item.get("name"), 0) + 1
                     for name in counts.keys():
                         temp = self.t / name
@@ -92,5 +93,6 @@ class Script:
 
 # if __name__ == '__main__':
 #     s = Script(r"D:\dddd\hwxj 测试数据", "D:\dddd\结果")
-#     # s.predict(s.path2base64(r"D:\dddd\IMG_0037.jpg"))
-#     s.run()
+#     res = s.predict(s.path2base64(r"D:\1.jpg"))
+#     print(res)
+    # s.run()

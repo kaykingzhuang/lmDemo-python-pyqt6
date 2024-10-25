@@ -41,7 +41,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
         logger.info(
             f"程序初始化成功，当前配置为：处理图片类型->{self.config.suffix},"
             f"识别接口->{self.config.api},处理线程数->{self.config.thread},"
-            f"过滤置信度->{self.config.score}")
+            f"过滤置信度->{self.config.score},排除物种名->{self.config.exclude}")
 
     def selectFolder(self, rev):
         directory = QFileDialog.getExistingDirectory(self, "选择文件夹", self.config.last_folder)

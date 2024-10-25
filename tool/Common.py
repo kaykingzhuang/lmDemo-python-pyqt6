@@ -27,6 +27,8 @@ class Config:
 
     api = "http://192.168.1.110:5000/predict"
 
+    exclude = ["鸟","兽"]
+
     def __init__(self):
         js = self.init_json()
         self.title = js["title"]
@@ -35,6 +37,7 @@ class Config:
         self.last_folder = js["last_folder"]
         self.api = js["api"]
         self.score = js["score"]
+        self.exclude = js["exclude"]
 
 
     def init_json(self):
@@ -57,6 +60,7 @@ class Config:
             "last_folder": self.last_folder,
             "api": self.api,
             "score": self.score,
+            "exclude": self.exclude,
         }
         with open(file.as_posix(), "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
