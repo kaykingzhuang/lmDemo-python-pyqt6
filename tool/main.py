@@ -38,6 +38,11 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
         logger.add(self.config.log_file_path, format="{time} {level} {message}",
                    rotation="00:00", retention="1 day")
 
+        logger.info(
+            f"程序初始化成功，当前配置为：处理图片类型->{self.config.suffix},"
+            f"识别接口->{self.config.api},处理线程数->{self.config.thread},"
+            f"过滤置信度->{self.config.score}")
+
     def selectFolder(self, rev):
         directory = QFileDialog.getExistingDirectory(self, "选择文件夹", self.config.last_folder)
         if directory:

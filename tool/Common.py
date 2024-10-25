@@ -23,6 +23,8 @@ class Config:
 
     last_folder = "/"
 
+    score = 0.85
+
     api = "http://192.168.1.110:5000/predict"
 
     def __init__(self):
@@ -32,6 +34,7 @@ class Config:
         self.thread = js["thread"]
         self.last_folder = js["last_folder"]
         self.api = js["api"]
+        self.score = js["score"]
 
 
     def init_json(self):
@@ -53,6 +56,7 @@ class Config:
             "thread": self.thread,
             "last_folder": self.last_folder,
             "api": self.api,
+            "score": self.score,
         }
         with open(file.as_posix(), "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)

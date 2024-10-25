@@ -32,7 +32,9 @@ class Script:
                 if res:
                     counts = {}
                     for item in res:
-                        counts[item.get("name")] = counts.get(item.get("name"), 0) + 1
+                        score = item.get("score")
+                        if score>=self.config.score:
+                            counts[item.get("name")] = counts.get(item.get("name"), 0) + 1
                     for name in counts.keys():
                         temp = self.t / name
                         if not temp.exists():
