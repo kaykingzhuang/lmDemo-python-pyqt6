@@ -12,3 +12,6 @@ main.py -> 主要程序启动
 MyThread.py -> 自定义线程类
 script.py -> 主要代码，包括识别接口调用，文件保存等
 ui.py -> pyqt6的ui代码
+
+初次运行后会生成json文件  
+{"title": ["照片名", "拍摄时间", "设备名称", "物种名", "数量", "文件路径"], "suffix": ["jpg", "png", "jpeg"], "thread": 3, "last_folder": "/", "api": "http://192.168.1.110:5000/predict"}
