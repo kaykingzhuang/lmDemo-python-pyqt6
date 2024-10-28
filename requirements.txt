@@ -1,0 +1,6 @@
+opencv-python
+loguru
+urllib3
+PyQt6
+openpyxl
+exifread

@@ -14,7 +14,11 @@ class Config:
     log_file_path = "log/log_{time}.log"
 
     # 处理的文件后缀
-    suffix = ["jpg", "png", "jpeg"]
+    suffix = ["jpg", "png", "jpeg", "mov", "mp4", "avi"]
+
+    IMG = ["jpg", "png", "jpeg"]
+
+    VIDEO = ["mov", "mp4", "avi"]
 
     # 处理线程数
     thread = 3
@@ -29,6 +33,8 @@ class Config:
 
     exclude = ["鸟","兽"]
 
+    drop_frames = 25
+
     def __init__(self):
         js = self.init_json()
         self.title = js["title"]
@@ -38,6 +44,7 @@ class Config:
         self.api = js["api"]
         self.score = js["score"]
         self.exclude = js["exclude"]
+        self.drop_frames = js["drop_frames"]
 
 
     def init_json(self):
@@ -61,6 +68,7 @@ class Config:
             "api": self.api,
             "score": self.score,
             "exclude": self.exclude,
+            "drop_frames": self.drop_frames,
         }
         with open(file.as_posix(), "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)

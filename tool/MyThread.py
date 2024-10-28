@@ -1,12 +1,13 @@
 import threading
 
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal, QObject
 
 from tool.script import Script
 
 
-class MyThread(QThread):
+class MyThread(QObject):
     error = pyqtSignal()
+    finished = pyqtSignal()
     def __init__(self, s:Script):
         """
         初始化线程
@@ -17,4 +18,5 @@ class MyThread(QThread):
     def run(self):
 
         self.s.run(self.error)
+        self.finished.emit()
 

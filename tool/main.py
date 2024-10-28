@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QUrl, QThread
 from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import QFileDialog, QMessageBox
 from loguru import logger
@@ -33,6 +33,12 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
         self.config = Config()
         logger.info(f"当前使用接口{self.config.api}")
 
+        self.threads = []
+        self.workers = []
+        self.finish_count = 0
+        self.total = 0
+        self.wb = None
+
 
         # 配置日志回滚
         logger.add(self.config.log_file_path, format="{time} {level} {message}",
@@ -56,6 +62,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
 
         wb = Excel()
         wb = wb.work_book().set_title_border(self.config.title)
+        self.wb = wb
 
         root = self.lineEdit.text()
         target = self.lineEdit_2.text()
@@ -65,40 +72,51 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
             self.bar.setValue(0)
             files = self.get_file_list(root)
             items = self.split_file_list(files, int(len(files) / self.config.thread) + 1)
-            threads = []
+            self.total = len(files)
+            self.finish_count = 0
+            self.threads = []
+            self.workers = []
 
             for item in items:
                 s = Script(item,target)
-                s.set_total(len(files))
+                s.set_total(self.total)
                 s.set_bar(self.bar)
                 s.set_wb(wb)
                 th = MyThread(s)
-                threads.append(th)
+                self.workers.append(th)
+                self.threads.append(QThread())
+                self.workers[-1].moveToThread(self.threads[-1])
+                self.threads[-1].started.connect(self.workers[-1].run)
+                self.workers[-1].error.connect(self.error)
 
-            for i in range(len(threads)):
-                threads[i].error.connect(self.error)
-                threads[i].start()
+                self.workers[-1].finished.connect(self.workers[-1].deleteLater)
 
-            for th in threads:
-                th.wait()
+                self.workers[-1].finished.connect(self.finished)
+                self.threads[-1].start()
 
-            # for th in threads:
-            #     th.join()
         except Exception as e:
             print(e.args)
             out = Status.error
             QMessageBox.critical(None,"错误信息", str(e.args), QMessageBox.StandardButton.Ok)
-        finally:
+
+
+
+    def finished(self):
+        self.finish_count += 1
+        logger.info("done!")
+        if self.finish_count>=len(self.threads):
+            target = self.lineEdit_2.text()
             save =  Path(Path(target) / "result.xlsx")
-            if save.exists():
-                save.unlink()
-            wb.save(save.as_posix())
+            try:
+                if save.exists():
+                    save.unlink()
+                self.wb.save(save.as_posix())
+            except PermissionError as e:
+                QMessageBox.critical(None, "错误信息", str(e.args), QMessageBox.StandardButton.Ok)
+
             self.done()
-
-    # def begin(self):
-    #     self.startBtn.setVisible(False)
-    #     self.status.setText(Status.handle)
-
+            for item in self.threads:
+                item.quit()
 
     def done(self):
         self.bar.setValue(100)

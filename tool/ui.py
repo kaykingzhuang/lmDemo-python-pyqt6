@@ -123,6 +123,8 @@ class Ui_Dialog(object):
 
         self.bar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.DefaultContextMenu)
         self.bar.setProperty("value", 0)
+        self.bar.setFormat("%p%")
+
         self.bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.bar.setTextVisible(True)
         self.bar.setOrientation(QtCore.Qt.Orientation.Horizontal)
