@@ -13,5 +13,8 @@ MyThread.py -> 自定义线程类
 script.py -> 主要代码，包括识别接口调用，文件保存等
 ui.py -> pyqt6的ui代码
 
+修复了线程生命周期的问题以及增加了对视频的识别分类（按配置的分隔数取视频帧然后识别，结果取置信度高且数量最多的）
+
+
 初次运行后会生成json文件  
-{"title": ["照片名", "拍摄时间", "设备名称", "物种名", "数量", "文件路径"], "suffix": ["jpg", "png", "jpeg"], "thread": 3, "last_folder": "/", "api": "http://192.168.1.110:5000/predict"}
+{"title": ["照片名", "拍摄时间", "设备名称", "物种名", "数量", "文件路径"], "suffix": ["jpg", "png", "jpeg", "mov", "mp4", "avi"], "thread": 3, "last_folder": "D:/dddd/res", "api": "http://192.168.1.110:5000/predict", "score": 0.85, "exclude": ["鸟", "兽"], "drop_frames": 25}
