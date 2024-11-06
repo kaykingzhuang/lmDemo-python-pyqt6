@@ -1,3 +1,4 @@
+import random
 import sys
 from pathlib import Path
 
@@ -37,6 +38,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
         self.workers = []
         self.finish_count = 0
         self.total = 0
+        self.current = 0
         self.wb = None
 
 
@@ -71,8 +73,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
                 raise Exception(Status.noSelect)
             self.bar.setValue(0)
             files = self.get_file_list(root)
+            random.shuffle(files)
             items = self.split_file_list(files, int(len(files) / self.config.thread) + 1)
             self.total = len(files)
+            self.current = 0
             self.finish_count = 0
             self.threads = []
             self.workers = []
@@ -80,7 +84,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
             for item in items:
                 s = Script(item,target)
                 s.set_total(self.total)
-                s.set_bar(self.bar)
                 s.set_wb(wb)
                 th = MyThread(s)
                 self.workers.append(th)
@@ -88,6 +91,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
                 self.workers[-1].moveToThread(self.threads[-1])
                 self.threads[-1].started.connect(self.workers[-1].run)
                 self.workers[-1].error.connect(self.error)
+                self.workers[-1].process.connect(self.process)
 
                 self.workers[-1].finished.connect(self.workers[-1].deleteLater)
 
@@ -117,6 +121,11 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
             self.done()
             for item in self.threads:
                 item.quit()
+
+    def process(self):
+        self.current +=1
+        value = min(100, int(self.current * 100 / self.total))
+        self.bar.setValue(value)
 
     def done(self):
         self.bar.setValue(100)

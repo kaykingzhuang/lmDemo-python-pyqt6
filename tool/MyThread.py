@@ -8,6 +8,7 @@ from tool.script import Script
 class MyThread(QObject):
     error = pyqtSignal()
     finished = pyqtSignal()
+    process = pyqtSignal()
     def __init__(self, s:Script):
         """
         初始化线程
@@ -17,6 +18,6 @@ class MyThread(QObject):
 
     def run(self):
 
-        self.s.run(self.error)
+        self.s.run(self.error, self.process)
         self.finished.emit()
 

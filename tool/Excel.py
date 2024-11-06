@@ -12,10 +12,13 @@ class Excel:
     def __init__(self):
         self.excel = None
         self.sheet = None
+        self.sheet2 = None
 
     def work_book(self):
         wb = Workbook()
+        wb.remove(wb['Sheet'])
         self.sheet = wb.create_sheet("结果", 0)
+        self.sheet2 = wb.create_sheet("可疑物种", 1)
         self.excel = wb
         return self
 
@@ -25,8 +28,10 @@ class Excel:
 
     def set_title_border(self, m: list[str]):
         self.sheet.append(m)
+        self.sheet2.append(m)
         for i in range(1, len(m) + 1):
             self.sheet[get_column_letter(i) + "1"].border = self.border
+            self.sheet2[get_column_letter(i) + "1"].border = self.border
         return self
 
     def save(self, o):

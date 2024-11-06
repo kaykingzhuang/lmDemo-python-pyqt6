@@ -29,7 +29,9 @@ class Config:
 
     score = 0.85
 
-    api = "http://192.168.1.110:5000/predict"
+    group_score = 0.85
+
+    api = "http://192.168.10.8:9000/hwxj_vector_index"
 
     exclude = ["鸟","兽"]
 
@@ -45,6 +47,7 @@ class Config:
         self.score = js["score"]
         self.exclude = js["exclude"]
         self.drop_frames = js["drop_frames"]
+        self.group_score = js["group_score"]
 
 
     def init_json(self):
@@ -69,6 +72,7 @@ class Config:
             "score": self.score,
             "exclude": self.exclude,
             "drop_frames": self.drop_frames,
+            "group_score": self.group_score,
         }
         with open(file.as_posix(), "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
