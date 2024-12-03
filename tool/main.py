@@ -1,3 +1,4 @@
+import os
 import random
 import sys
 from pathlib import Path
@@ -73,7 +74,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
                 raise Exception(Status.noSelect)
             self.bar.setValue(0)
             files = self.get_file_list(root)
-            random.shuffle(files)
             items = self.split_file_list(files, int(len(files) / self.config.thread) + 1)
             self.total = len(files)
             self.current = 0
@@ -150,9 +150,13 @@ class MyApp(QtWidgets.QMainWindow, Ui_Dialog):
     def get_file_list(self, root) -> list[str]:
         directory = Path(root)
         s = []
-        for item in self.config.suffix:
-            s += list(directory.rglob(f"*.{item}"))
-        return s
+        # for item in self.config.suffix:
+        #     s += list(directory.rglob(f"*.{item}"))
+        files = []
+        for root, dirs, files_ in os.walk(directory):
+            for file_ in files_:
+                files.append(os.path.join(root, file_))
+        return files
 
     @staticmethod
     def split_file_list(alist, size):

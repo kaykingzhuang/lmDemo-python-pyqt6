@@ -37,6 +37,8 @@ class Config:
 
     drop_frames = 25
 
+    name_sheet:dict = {"果子狸":"花面狸","豪猪":"马来豪猪"}
+
     def __init__(self):
         js = self.init_json()
         self.title = js["title"]
@@ -48,6 +50,7 @@ class Config:
         self.exclude = js["exclude"]
         self.drop_frames = js["drop_frames"]
         self.group_score = js["group_score"]
+        self.name_sheet = js["name_sheet"]
 
 
     def init_json(self):
@@ -73,6 +76,7 @@ class Config:
             "exclude": self.exclude,
             "drop_frames": self.drop_frames,
             "group_score": self.group_score,
+            "name_sheet": self.name_sheet,
         }
         with open(file.as_posix(), "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)

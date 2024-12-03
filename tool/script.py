@@ -25,28 +25,35 @@ class Script:
 
         self.wb = None
 
+        self.previous = []
+
     def run(self, error, process):
         files = self.files
         for file in files:
             try:
                 fields = Exif.read(file)
-                suffix = file.suffix
-                suffix:str = suffix[1:]
+                suffix = file[file.rfind(".")+1:]
+                # suffix:str = suffix[1:]
                 suffix = suffix.lower()
+                file_name = file[file.rfind("\\")+1:]
                 if suffix in self.config.IMG:
                     counts, others = self.predict_image(file)
+                    self.previous = [counts, others]
                 else:
-                    counts, others = self.predict_video(file)
+                    if self.previous:
+                        counts, others = self.previous[:]
+                    else:
+                        counts, others = self.predict_video(file)
                 if counts:
                     """确种"""
                     for name in counts.keys():
                         temp = self.t / name
                         if not temp.exists():
                             temp.mkdir(parents=True, exist_ok=True)
-                        targetFile = temp / file.name
+                        targetFile = temp / file_name
                         shutil.copy(file, targetFile)
 
-                        add = [file.name,
+                        add = [file_name,
                                fields.get("Image DateTime"),
                                fields.get("Image Make") + fields.get("Image Model"),
                                name,
@@ -59,9 +66,9 @@ class Script:
                         temp = self.o_path / name
                         if not temp.exists():
                             temp.mkdir(parents=True, exist_ok=True)
-                        targetFile = temp / file.name
+                        targetFile = temp / file_name
                         shutil.copy(file, targetFile)
-                        add = [file.name,
+                        add = [file_name,
                                fields.get("Image DateTime"),
                                fields.get("Image Make") + fields.get("Image Model"),
                                name,
@@ -79,6 +86,14 @@ class Script:
         [{'bbox': [27, 165, 109, 173], 'group_name': '人', 'group_score': 0.9478, 'name': '野猪', 'score': 0.8711}]
         """
 
+    def predict(self,file):
+        suffix = file.suffix
+        suffix: str = suffix[1:]
+        suffix = suffix.lower()
+        if suffix in self.config.IMG:
+            counts, others = self.predict_image(file)
+        else:
+            counts, others = self.predict_video(file)
 
     def predict_video(self, location):
         cap = cv2.VideoCapture(location)
@@ -87,6 +102,11 @@ class Script:
         c = 0
         counts = {}
         others = {}
+
+        if not cap.isOpened():
+            logger.error(f"视频文件异常->{location}")
+            return counts, others
+
         while True:
             ret, frame = cap.read()
             if not ret:
@@ -121,12 +141,14 @@ class Script:
         for item in data:
             score = item.get("score")
             tName = item.get("name")
+            if tName in self.config.name_sheet.keys():
+                tName = self.config.name_sheet.get(tName)
             if score >= self.config.score and tName not in self.config.exclude:
-                counts[item.get("name")] = counts.get(item.get("name"), 0) + 1
+                counts[tName] = counts.get(tName, 0) + 1
             else:
                 group_score = item.get("group_score")
                 if group_score > self.config.group_score:
-                    others[item.get("name")] = others.get(item.get("name"), 0) + 1
+                    others[tName] = others.get(tName, 0) + 1
         return [counts,others]
 
 
